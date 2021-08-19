@@ -1,0 +1,4 @@
+node_modules
+other.js
+.parcel-cache
+dist
