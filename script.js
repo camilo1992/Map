@@ -6,6 +6,7 @@ class Workout {
   clicks = 0;
   edit = false;
   e;
+  mapEvent;
 
   constructor(coords, distance, duration) {
     // this.date = ...
@@ -81,7 +82,7 @@ const deleteAllBtn = document.querySelector(`.btn`);
 
 class App {
   #map;
-  #mapZoomLevel = 13;
+  #mapZoomLevel = 15;
   #mapEvent;
   workouts = [];
   #markers = [];
@@ -170,6 +171,7 @@ class App {
 
   _showForm(mapE) {
     this.#mapEvent = mapE;
+    this.mapEvent = this.#mapEvent;
     form.classList.remove('hidden');
     inputDistance.focus();
   }
@@ -200,16 +202,22 @@ class App {
   _newWorkout(e) {
     const validInputs = (...inputs) =>
       inputs.every(inp => Number.isFinite(inp));
+
     const allPositive = (...inputs) => inputs.every(inp => inp > 0);
 
+    // Define edited workout
+    const edited = this.workouts.find(workout => workout.edit);
+
     e.preventDefault();
+    console.log(edited);
+
+    const lng = this.#mapEvent?.latlng.lng || edited.coords[1];
+    const lat = this.#mapEvent?.latlng.lat || edited.coords[0];
 
     // Get data from form
     const type = inputType.value;
     const distance = +inputDistance.value;
     const duration = +inputDuration.value;
-    const lng = this.#mapEvent.latlng.lng;
-    const lat = this.#mapEvent.latlng.lat;
     let workout;
 
     // If workout running, create running object
@@ -261,9 +269,10 @@ class App {
     this._RenderDeleteAllBtn();
 
     // Set delete edited event
-    const edited = this.workouts.find(workout => workout.edit);
+
     if (!edited) return;
     this.deleteElement(edited.e);
+    this._renderWorkoutMarker(edited);
   }
 
   _renderWorkoutMarker(workout) {
@@ -297,7 +306,6 @@ class App {
     this.#markers.push(marker1);
 
     const { lat, lng } = marker1.getLatLng();
-    console.log(lat, lng);
   }
 
   _renderWorkout(workout) {
@@ -412,10 +420,10 @@ class App {
     const idx = data.findIndex(workout => id === workout.id);
     const marker = this.#markers[idx];
 
-    // Remove element formthe UI list
+    // Remove element from the UI list
     el.remove();
 
-    // Delete lement formt he local storage
+    // Delete lement formt the local storage
     data.splice(idx, 1);
 
     // Delete workout marker
@@ -457,6 +465,13 @@ class App {
     inputDistance.focus();
 
     e.stopPropagation();
+  }
+
+  sortResults(arr) {
+    // the sort mehtod is gonnamutate the array.
+    return arr.sort((a, b) => b - a);
+
+    // console.log(sorted);
   }
 }
 
