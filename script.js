@@ -65,10 +65,6 @@ class Cycling extends Workout {
   }
 }
 
-// const run1 = new Running([39, -12], 5.2, 24, 178);
-// const cycling1 = new Cycling([39, -12], 27, 95, 523);
-// console.log(run1, cycling1);
-
 ///////////////////////////////////////
 // APPLICATION ARCHITECTURE
 const form = document.querySelector('.form');
@@ -79,6 +75,7 @@ const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
 const deleteAllBtn = document.querySelector(`.btn`);
+const sortBtn = document.querySelector(`.fa-exchange`);
 
 class App {
   #map;
@@ -86,6 +83,7 @@ class App {
   #mapEvent;
   workouts = [];
   #markers = [];
+  sort = false;
 
   constructor() {
     // Get user's position
@@ -96,13 +94,13 @@ class App {
 
     // Create Delete all button when there is a workOut sotored in the local.
     this._RenderDeleteAllBtn();
-    // console.log(localStorage.length);
 
     // Attach event handlers
     form.addEventListener('submit', this._newWorkout.bind(this));
     inputType.addEventListener('change', this._toggleElevationField);
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
     deleteAllBtn.addEventListener(`click`, this._deleteAll.bind(this));
+    sortBtn.addEventListener(`click`, this.sortResults.bind(this));
   }
 
   _deleteAll() {
@@ -209,7 +207,6 @@ class App {
     const edited = this.workouts.find(workout => workout.edit);
 
     e.preventDefault();
-    console.log(edited);
 
     const lng = this.#mapEvent?.latlng.lng || edited.coords[1];
     const lat = this.#mapEvent?.latlng.lat || edited.coords[0];
@@ -313,8 +310,8 @@ class App {
       <li class="workout workout--${workout.type}" data-id="${workout.id}">
       <h2 class="workout__title">${workout.description}</h2>
        <div class="edit-btn" >
-          <i class="fa fa-trash-o" style="font-size:20px"></i>
-          <i class="material-icons" style="font-size:22px; padding-left:5px">edit</i>
+       <i class="fa fa-trash-o" style="font-size:20px"></i>
+       <i class="fa fa-pencil" style="font-size:20px; padding-left:10px"></i> 
         </div>
         <div class="workout__details">
           <span class="workout__icon">${
@@ -447,7 +444,7 @@ class App {
   }
 
   setEditBtn() {
-    const edit = document.querySelector(`.material-icons`);
+    const edit = document.querySelector(`.fa-pencil`);
     edit.addEventListener(`click`, this.editWourout.bind(this));
   }
 
@@ -467,11 +464,24 @@ class App {
     e.stopPropagation();
   }
 
-  sortResults(arr) {
-    // the sort mehtod is gonnamutate the array.
-    return arr.sort((a, b) => b - a);
+  sortResults() {
+    // There is a variable called sorted -->
+    // it works as a states variable in order to help us sort and unsort workouts.
 
-    // console.log(sorted);
+    //Get data
+    const workouts = [...this.workouts];
+    workouts.sort((a, b) => a.distance - b.distance);
+    // Clear workout cotainer
+    const curWorkouts = Array.from(document.querySelectorAll(`.workout`));
+    curWorkouts.forEach(data => data.remove());
+    // Render sorted workouts
+    if (!this.sort) {
+      this.sort = !this.sort;
+      workouts.forEach(workout => this._renderWorkout(workout));
+    } else {
+      this.workouts.forEach(workout => this._renderWorkout(workout));
+      this.sort = !this.sort;
+    }
   }
 }
 
