@@ -76,6 +76,7 @@ const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
 const deleteAllBtn = document.querySelector(`.btn`);
 const sortBtn = document.querySelector(`.fa-exchange`);
+sortBtn.style.display = 'none';
 
 class App {
   #map;
@@ -133,6 +134,7 @@ class App {
 
     // Hide Delete button
     deleteAllBtn.style.display = `none`;
+    sortBtn.style.display = 'none';
   }
 
   _getPosition() {
@@ -195,6 +197,7 @@ class App {
   _RenderDeleteAllBtn() {
     if (localStorage.length === 0) return;
     deleteAllBtn.style.display = `grid`;
+    sortBtn.style.display = 'grid';
   }
 
   _newWorkout(e) {
@@ -266,7 +269,6 @@ class App {
     this._RenderDeleteAllBtn();
 
     // Set delete edited event
-
     if (!edited) return;
     this.deleteElement(edited.e);
     this._renderWorkoutMarker(edited);
@@ -436,6 +438,8 @@ class App {
     //  Hide delete all btn
     if (data.length === 0) {
       deleteAllBtn.style.display = `none`;
+      sortBtn.style.display = 'none';
+
       localStorage.clear();
     }
 

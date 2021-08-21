@@ -234,13 +234,12 @@ a:visited {
   display: none;
 }
 
-.sort {
-  margin-right: 3px;
-}
-
 /* Darker background on mouse-over */
 .btn:hover {
   background-color: RoyalBlue;
+}
+.sort {
+  margin-right: 3px;
 }
 .sort {
   text-align: center;
